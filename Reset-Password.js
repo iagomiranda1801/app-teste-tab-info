@@ -1,19 +1,27 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text, Alert } from 'react-native';
+import {
+  View,
+  TextInput,
+  Text,
+  Alert,
+  TouchableOpacity,
+  StyleSheet,
+  StatusBar,
+  KeyboardAvoidingView,
+  Platform,
+} from 'react-native';
 
-const ResetPasswordScreen = () => {
+const ResetPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
 
-  // Função para validar os campos
   const validateForm = () => {
     if (!email || !password || !confirmPassword) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return false;
     }
 
-    // Verifica se as senhas coincidem
     if (password !== confirmPassword) {
       Alert.alert('Erro', 'As senhas não coincidem.');
       return false;
@@ -22,12 +30,11 @@ const ResetPasswordScreen = () => {
     return true;
   };
 
-  // Função para consumir a API de redefinição de senha
   const handleResetPassword = async () => {
-    if (!validateForm()) return; // Valida antes de continuar
+    if (!validateForm()) return;
 
     try {
-      const response = await fetch('SUA_API_DE_REDEFINICAO_DE_SENHA', {
+      const response = await fetch('http://192.168.0.33/teste-tab-info/reset-password.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -38,10 +45,8 @@ const ResetPasswordScreen = () => {
         }),
       });
 
-      // Verifica a resposta da API
       if (response.ok) {
         const data = await response.json();
-        // Tratar a resposta, como mostrar uma mensagem de sucesso
         Alert.alert('Sucesso', 'Senha redefinida com sucesso!');
       } else {
         const error = await response.json();
@@ -54,30 +59,93 @@ const ResetPasswordScreen = () => {
   };
 
   return (
-    <View style={{ padding: 20 }}>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.select({ ios: 'padding', android: undefined })}
+    >
+      <StatusBar barStyle="dark-content" />
+      <Text style={styles.title}>Redefinir Senha</Text>
+
       <TextInput
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 10 }}
+        style={styles.input}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
+        keyboardType="email-address"
       />
+
       <TextInput
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 10 }}
+        style={styles.input}
         placeholder="Nova Senha"
         secureTextEntry
         value={password}
         onChangeText={setPassword}
       />
+
       <TextInput
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 20 }}
+        style={styles.input}
         placeholder="Confirmar Senha"
         secureTextEntry
         value={confirmPassword}
         onChangeText={setConfirmPassword}
       />
-      <Button title="Redefinir Senha" onPress={handleResetPassword} />
-    </View>
+
+      <View style={styles.buttonRow}>
+        <TouchableOpacity style={[styles.button, { flex: 1, marginRight: 10 }]} onPress={handleResetPassword}>
+          <Text style={styles.buttonText}>Redefinir Senha</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.button, { flex: 1, backgroundColor: '#aaa' }]} onPress={() => navigation.goBack()}>
+          <Text style={styles.buttonText}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+
+    </KeyboardAvoidingView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    padding: 20,
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    width: '100%',
+    marginTop: 10,
+    justifyContent: 'space-between',
+  },
+
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    color: '#333',
+    textAlign: 'center',
+  },
+  input: {
+    width: '100%',
+    padding: 15,
+    marginBottom: 15,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    backgroundColor: '#fff',
+  },
+  button: {
+    backgroundColor: '#4CAF50',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+});
 
 export default ResetPasswordScreen;
