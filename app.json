@@ -4,11 +4,11 @@
     "slug": "teste-tab-info",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/tabinfo.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/tabinfo.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -17,12 +17,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/tabinfo.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.iagomiraanda.testetabinfo"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/tabinfo.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "4d24c8da-aa6d-4892-acf0-4bd3effb3f75"
+      }
     }
   }
 }

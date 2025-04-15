@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar, Alert,ActivityIndicator } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, StatusBar, Alert, ActivityIndicator, Image } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 
@@ -7,10 +7,10 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   // Função para consumir a API de login
   const handleLogin = async () => {
-    console.log("entrei no login")
+
 
     if (!email || !password) {
       console.log("entrei no if")
@@ -19,7 +19,7 @@ const LoginScreen = ({ navigation }) => {
     }
     setLoading(true);
     try {
-      const response = await fetch('http://192.168.0.33/teste-tab-info/login.php', {
+      const response = await fetch('http://192.168.1.3/teste-tab-info/login.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,8 +31,8 @@ const LoginScreen = ({ navigation }) => {
       });
 
       const data = await response.json();
+      console.log("response", data)
 
-      console.log("success", data)
       // Verifica se a resposta da API foi bem-sucedida
       if (data.success) {
         setLoading(false);
@@ -48,14 +48,14 @@ const LoginScreen = ({ navigation }) => {
       } else {
         // Caso o login falhe
         setLoading(false);
-        const error = await response.json();
-        console.log("error", error)
-        Alert.alert('Erro', error.message || 'Falha no login.');
+        Alert.alert('Atenção', data.message || 'Falha no login.');
       }
     } catch (error) {
       setLoading(false);
       console.log('Erro ao fazer login:', error);
       Alert.alert('Erro', 'Ocorreu um erro. Tente novamente mais tarde.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,6 +63,11 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
+      <Image
+        source={require('./assets/tabinfo1.png')} // Ou uma URL: { uri: 'https://link-da-sua-imagem' }
+        style={styles.logo}
+        resizeMode="contain"
+      />
       {loading && <ActivityIndicator size="large" color="#4CAF50" style={{ marginBottom: 20 }} />}
       <StatusBar barStyle="dark-content" />
       <Text style={styles.title}>Bem-vindo!</Text>
@@ -83,7 +88,7 @@ const LoginScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Entrar</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={{width: '100%',}} onPress={() => navigation.navigate('ResetPassword')}>
+      <TouchableOpacity style={{ width: '100%', }} onPress={() => navigation.navigate('ResetPassword')}>
         <Text style={styles.signupText}>Esqueceu sua senha?</Text>
       </TouchableOpacity>
     </View>
@@ -97,6 +102,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 20,
     backgroundColor: '#f0f0f0',
+  },
+  logo: {
+    width: 200,
+    height: 100,
+    bottom: 50,
+    opacity: 0.8, // Discreto!
   },
   title: {
     fontSize: 24,

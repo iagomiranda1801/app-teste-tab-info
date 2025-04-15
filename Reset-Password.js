@@ -9,14 +9,16 @@ import {
   StatusBar,
   KeyboardAvoidingView,
   Platform,
+  ActivityIndicator
 } from 'react-native';
 
 const ResetPasswordScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-  const validateForm = () => {
+  const [loading, setLoading] = useState(false);
+  const handleResetPassword = async () => {
+      console.log("entrei no password")
     if (!email || !password || !confirmPassword) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return false;
@@ -26,35 +28,37 @@ const ResetPasswordScreen = ({ navigation }) => {
       Alert.alert('Erro', 'As senhas não coincidem.');
       return false;
     }
-
-    return true;
-  };
-
-  const handleResetPassword = async () => {
-    if (!validateForm()) return;
-
+    setLoading(true);
     try {
-      const response = await fetch('http://192.168.0.33/teste-tab-info/reset-password.php', {
+      const response = await fetch('http://192.168.1.3/teste-tab-info/reset-password.php', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           email: email,
-          password: password,
+          senha: password,
         }),
       });
-
-      if (response.ok) {
-        const data = await response.json();
+     
+      const data = await response.json();
+      console.log("response", data) 
+      if (data.success) {
+        
         Alert.alert('Sucesso', 'Senha redefinida com sucesso!');
+
+        setTimeout(() => {
+          navigation.navigate('Login');
+        }, 1500);
       } else {
-        const error = await response.json();
-        Alert.alert('Erro', error.message || 'Falha ao redefinir a senha.');
+        Alert.alert('Erro', data.message || 'Falha ao redefinir a senha.');
       }
     } catch (error) {
       console.error('Erro ao redefinir a senha:', error);
       Alert.alert('Erro', 'Ocorreu um erro. Tente novamente mais tarde.');
+      
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -65,7 +69,7 @@ const ResetPasswordScreen = ({ navigation }) => {
     >
       <StatusBar barStyle="dark-content" />
       <Text style={styles.title}>Redefinir Senha</Text>
-
+       {loading && <ActivityIndicator size="large" color="#4CAF50" style={{ marginBottom: 20 }} />}
       <TextInput
         style={styles.input}
         placeholder="Email"
